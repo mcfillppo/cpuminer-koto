@@ -1,8 +1,8 @@
 #
-# Dockerfile for cpuminer-opt
-# usage: docker build -t cpuminer-opt:latest .
-# run: docker run -it --rm cpuminer-opt:latest [ARGS]
-# ex: docker run -it --rm cpuminer-opt:latest -a cryptonight -o cryptonight.eu.nicehash.com:3355 -u 1MiningDW2GKzf4VQfmp4q2XoUvR6iy6PD.worker1 -p x -t 3
+# Dockerfile for cpuminer-koto
+# usage: docker build -t cpuminer-koto:latest .
+# run: docker run -it --rm cpuminer-koto:latest [ARGS]
+# ex: docker run -it --rm cpuminer-koto:latest -o stratum+tcp://jp.kotopool.work:3333 -u k1GHJkvxLQocac94MFBbKAsdUvNbFdFWUyE.worker1 -p x -t 4
 #
 
 # Build
