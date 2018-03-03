@@ -38,6 +38,12 @@ MacOS, OSx is not supported.
 
 3. A Stratum pool.
 
+Installation
+------------
+
+On Linux-based systems, simply run `./build.sh` from the root directory of the
+`cpuminer-koto` repository.
+
 Usage
 -----
 ```
