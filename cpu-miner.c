@@ -99,8 +99,7 @@ static int opt_time_limit = 0;
 int opt_timeout = 300;
 static int opt_scantime = 5;
 static const bool opt_time = true;
-enum algos opt_algo = ALGO_NULL;
-int opt_scrypt_n = 0;
+enum algos opt_algo = ALGO_YESCRYPT;
 int opt_pluck_n = 128;
 int opt_n_threads = 0;
 #ifdef __GNUC__
@@ -158,7 +157,7 @@ uint64_t net_blocks = 0;
   uint32_t opt_work_size = 0;
   char *opt_api_allow = NULL;
   int opt_api_remote = 0;
-  int opt_api_listen = 4048; 
+  int opt_api_listen = 4048;
 
   pthread_mutex_t rpc2_job_lock;
   pthread_mutex_t rpc2_login_lock;
@@ -208,9 +207,9 @@ static void affine_to_cpu_mask( int id, unsigned long long mask )
 {
    cpu_set_t set;
    CPU_ZERO(&set);
-   uint8_t ncpus = (num_cpus > 256) ? 256 : num_cpus;       
+   uint8_t ncpus = (num_cpus > 256) ? 256 : num_cpus;
 
-   for ( uint8_t i = 0; i < ncpus; i++ ) 
+   for ( uint8_t i = 0; i < ncpus; i++ )
    {
       // cpu mask
 #ifdef __GNUC__
@@ -809,9 +808,9 @@ static int share_result( int result, struct work *work, const char *reason )
    {
       solved_count++;
       if ( use_colors )
-         sprintf( sol, CL_GRN " Solved" CL_WHT " %d", solved_count );      
+         sprintf( sol, CL_GRN " Solved" CL_WHT " %d", solved_count );
       else
-         sprintf( sol, " Solved %d", solved_count ); 
+         sprintf( sol, " Solved %d", solved_count );
    }
 
    pthread_mutex_unlock(&stats_lock);
@@ -819,7 +818,7 @@ static int share_result( int result, struct work *work, const char *reason )
    global_hashrate = hashrate;
    total_submits = accepted_count + rejected_count;
 
-   rate = ( result ? ( 100. * accepted_count / total_submits )  
+   rate = ( result ? ( 100. * accepted_count / total_submits )
                    : ( 100. * rejected_count / total_submits ) );
 
    if (use_colors)
@@ -831,7 +830,7 @@ static int share_result( int result, struct work *work, const char *reason )
         sres = (result ? "Accepted" : "Rejected" );
    }
 
-   // Contrary to rounding convention 100% means zero rejects, exactly 100%. 
+   // Contrary to rounding convention 100% means zero rejects, exactly 100%.
    // Rates > 99% and < 100% (rejects>0) display 99.9%.
    if ( result )
    {
@@ -972,11 +971,11 @@ bool std_le_submit_getwork_result( CURL *curl, struct work *work )
       applog(LOG_ERR, "submit_upstream_work OOM");
       return false;
    }
-   // build JSON-RPC request 
+   // build JSON-RPC request
    snprintf( req, JSON_BUF_LEN,
      "{\"method\": \"getwork\", \"params\": [\"%s\"], \"id\":4}\r\n", gw_str );
    free( gw_str );
-   // issue JSON-RPC request 
+   // issue JSON-RPC request
    val = json_rpc_call( curl, rpc_url, rpc_userpass, req, NULL, 0 );
    if ( unlikely(!val) )
    {
@@ -1006,11 +1005,11 @@ bool std_be_submit_getwork_result( CURL *curl, struct work *work )
       applog(LOG_ERR, "submit_upstream_work OOM");
       return false;
    }
-   // build JSON-RPC request 
+   // build JSON-RPC request
    snprintf( req, JSON_BUF_LEN,
      "{\"method\": \"getwork\", \"params\": [\"%s\"], \"id\":4}\r\n", gw_str );
    free( gw_str );
-   // issue JSON-RPC request 
+   // issue JSON-RPC request
    val = json_rpc_call( curl, rpc_url, rpc_userpass, req, NULL, 0 );
    if ( unlikely(!val) )
    {
@@ -1042,7 +1041,7 @@ bool jr2_submit_getwork_result( CURL *curl, struct work *work )
        "\"id\":4}\r\n",
        rpc2_id, work->job_id, noncestr, hashhex );
    free( hashhex );
-   // issue JSON-RPC request 
+   // issue JSON-RPC request
    val = json_rpc2_call( curl, rpc_url, rpc_userpass, req, NULL, 0 );
    if (unlikely( !val ))
    {
@@ -1104,7 +1103,7 @@ char* std_malloc_txs_request( struct work *work )
          data_str, work->txs);
   }
   return req;
-} 
+}
 
 static bool submit_upstream_work( CURL *curl, struct work *work )
 {
@@ -1176,7 +1175,7 @@ static bool submit_upstream_work( CURL *curl, struct work *work )
       else
          share_result( json_is_null( res ), work, json_string_value( res ) );
       json_decref( val );
-      return true;     
+      return true;
    }
    else
        return algo_gate.submit_getwork_result( curl, work );
@@ -1252,7 +1251,7 @@ start:
          json_decref( val );
          goto start;
       }
-   } 
+   }
    else
       rc = work_decode( json_object_get( val, "result" ), work );
 
@@ -1461,7 +1460,7 @@ static bool get_work(struct thr_info *thr, struct work *work)
 		for ( int n = 0; n < 74; n++ ) ( (char*)work->data )[n] = n;
 
                 work->data[algo_gate.ntime_index] = swab32(ts);  // ntime
-  
+
               // this overwrites much of the for loop init
                 memset( work->data + algo_gate.nonce_index, 0x00, 52);  // nonce..nonce+52
 		work->data[20] = 0x80000000;  // extraheader not used for jr2
@@ -1733,7 +1732,7 @@ static void *miner_thread( void *userdata )
    time_t   firstwork_time = 0;
    int  i;
    memset( &work, 0, sizeof(work) );
- 
+
    /* Set worker threads to nice 19 and then preferentially to SCHED_IDLE
     * and if that fails, then SCHED_BATCH. No need for this to be an
     * error if it fails */
@@ -1787,7 +1786,7 @@ static void *miner_thread( void *userdata )
 */
    if ( num_cpus > 1 )
    {
-      if ( (opt_affinity == -1LL) && (opt_n_threads) > 1 ) 
+      if ( (opt_affinity == -1LL) && (opt_n_threads) > 1 )
       {
          if (opt_debug)
             applog( LOG_DEBUG, "Binding thread %d to cpu %d (mask %x)",
@@ -1929,7 +1928,7 @@ static void *miner_thread( void *userdata )
 	  pthread_mutex_unlock( &stats_lock );
        }
 
-       // if nonce(s) found submit work 
+       // if nonce(s) found submit work
        if ( nonce_found && !opt_benchmark )
        {  // 4 way with multiple nonces, copy individually to work and submit.
           if ( nonce_found > 1 )
@@ -2227,7 +2226,7 @@ bool jr2_stratum_handle_response( json_t *val )
     if ( !res_val && !err_val )
         return false;
     json_t *status = json_object_get( res_val, "status" );
-    if ( status ) 
+    if ( status )
     {
         const char *s = json_string_value( status );
         valid = !strcmp( s, "OK" ) && json_is_null( err_val );
@@ -2265,7 +2264,7 @@ out:
 
 // used by stratum and gbt
 void std_build_block_header( struct work* g_work, uint32_t version,
-                             uint32_t *prevhash, uint32_t *merkle_tree, 
+                             uint32_t *prevhash, uint32_t *merkle_tree,
                              uint32_t ntime, uint32_t nbits )
 {
    int i;
@@ -2547,39 +2546,7 @@ void parse_arg(int key, char *arg )
 	uint64_t ul;
 	double d;
 
-	switch(key)
-        {
-	   case 'a':
-              get_algo_alias( &arg );
-              for (i = 1; i < ALGO_COUNT; i++)
-              {
-	          v = (int) strlen(algo_names[i]);
-		  if (v && !strncasecmp(arg, algo_names[i], v))
-                  {
-			if (arg[v] == '\0')
-                        {
-				opt_algo = (enum algos) i;
-				break;
-			}
-			if (arg[v] == ':')
-                        {
-				char *ep;
-				v = strtol(arg+v+1, &ep, 10);
-                                if (*ep || v < 2)
-					continue;
-				opt_algo = (enum algos) i;
-				opt_scrypt_n = v;
-				break;
-			}
-		  }
-	      }
-              if (i == ALGO_COUNT)
-              {
-                 applog(LOG_ERR,"Unknown algo: %s",arg);
-                 show_usage_and_exit(1);
-              }
-           break;
-
+  switch(key) {
 	case 'b':
 		p = strstr(arg, ":");
 		if (p) {
@@ -2611,7 +2578,7 @@ void parse_arg(int key, char *arg )
 	case 'c': {
 		json_error_t err;
 		json_t *config;
-                
+
 		if (arg && strstr(arg, "://"))
 			config = json_load_url(arg, &err);
                 else
@@ -2990,10 +2957,14 @@ static int thread_create(struct thr_info *thr, void* func)
 
 static void show_credits()
 {
-   printf("\n         **********  "PACKAGE_NAME" "PACKAGE_VERSION"  *********** \n");
-   printf("     A CPU miner with multi algo support and optimized for CPUs\n");
-   printf("     with AES_NI and AVX2 and SHA extensions.\n");
-   printf("     BTC donation address: 12tdvfF7KmAsihBXQXynT6E6th2c2pByTT\n\n");
+   printf("\n         **********  "PACKAGE_STRING"  *********** \n");
+   printf("     An optimized Koto CPU miner with AES_NI and AVX2 and SHA extensions.\n\n");
+   printf("     Feel free to leave me a tip if you're feeling generous :)\n");
+   printf("       KOTO: k1GHJkvxLQocac94MFBbKAsdUvNbFdFWUyE\n");
+   printf("       BTC: 1HKWV5t4KGUwybVHNUaaY9TXFSoBvoaSiP\n");
+   printf("       ETH: 0xF17e490B391E17BE2D14BFfaA831ab8966d2e689\n");
+   printf("       LTC: LNSEJzT8byYasZGd4f9c3DgtMbmexnXHdy\n");
+   printf("       BCH: 1AVXvPBrNdhTdwBN5VQT5LSHa7sEzMSia4\n\n");
 }
 
 bool check_cpu_capability ()
@@ -3053,7 +3024,7 @@ bool check_cpu_capability ()
 
      cpu_brand_string( cpu_brand );
      printf( "CPU: %s.\n", cpu_brand );
-     
+
      printf("SW built on " __DATE__
      #ifdef _MSC_VER
          " with VC++ 2013\n");
@@ -3077,7 +3048,7 @@ bool check_cpu_capability ()
      if ( sw_has_avx2 )    printf( " AVX2" );
 //     if ( sw_has_4way )    printf( " 4WAY" );
      if ( sw_has_sha  )    printf( " SHA"  );
-    
+
 
      printf(".\nAlgo features:");
      if ( algo_features == EMPTY_SET ) printf( " None" );
@@ -3095,7 +3066,7 @@ bool check_cpu_capability ()
      // Check for CPU and build incompatibilities
      if ( !cpu_has_sse2 )
      {
-        printf( "A CPU with SSE2 is required to use cpuminer-opt\n" );
+        printf( "A CPU with SSE2 is required to use cpuminer-koto\n" );
         return false;
      }
      if ( sw_has_avx2 && !( cpu_has_avx2 && cpu_has_aes ) )
@@ -3128,7 +3099,7 @@ bool check_cpu_capability ()
 //     use_4way = cpu_has_avx2 && sw_has_4way && algo_has_4way;
      use_none = !( use_sse2 || use_aes || use_avx || use_avx2 || use_sha );
 //                   || use_4way );
-      
+
      // Display best options
      printf( "Start mining with" );
      if         ( use_none ) printf( " no optimizations" );
@@ -3183,11 +3154,6 @@ int main(int argc, char *argv[])
         if (!opt_n_threads)
                 opt_n_threads = num_cpus;
 
-        if ( opt_algo == ALGO_NULL )
-        {
-            fprintf(stderr, "%s: no algo supplied\n", argv[0]);
-            show_usage_and_exit(1);
-        }
 	if ( !opt_benchmark )
         {
             if ( !short_url )
@@ -3227,7 +3193,7 @@ int main(int argc, char *argv[])
 	}
 
         // All options must be set before starting the gate
-        if ( !register_algo_gate( opt_algo, &algo_gate ) )
+        if ( !register_algo_gate( &algo_gate ) )
            exit(1);
 
         if ( !check_cpu_capability() )
@@ -3300,7 +3266,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-   if ( num_cpus != opt_n_threads )   
+   if ( num_cpus != opt_n_threads )
      applog( LOG_INFO,"%u CPU cores available, %u miner threads selected.",
              num_cpus, opt_n_threads );
    if ( opt_affinity != -1 )
@@ -3311,7 +3277,7 @@ int main(int argc, char *argv[])
           applog(LOG_WARNING," than 64 CPUs, using default affinity.");
           opt_affinity = -1;
       }
-      else	
+      else
       {
          if (!opt_quiet)
             applog(LOG_DEBUG, "Binding process to cpu mask %x", opt_affinity);

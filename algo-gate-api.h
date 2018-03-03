@@ -13,7 +13,7 @@
 ////    of function pointers, by calling each algo's register function.
 //
 //
-// 
+//
 //    So you want to add an algo. Well it is a little easier now.
 //    Look at existing algos for guidance.
 //
@@ -54,18 +54,18 @@
 //    to initialize the new function to its null instance described in step 7.
 //
 //    11. If the new algo has aliases add them to the alias array in
-//    algo-gate-api.c 
+//    algo-gate-api.c
 //
 //    12. Include algo-gate-api.h and miner.h inthe algo's source file.
 //
 //    13. Inlude any other algo source files required by the new algo.
 //
-//    14. Done, compile and run. 
+//    14. Done, compile and run.
 
 
 // declare some function pointers
 // mandatory functions require a custom function specific to the algo
-// be defined. 
+// be defined.
 // otherwise the null instance will return a fail code.
 // Optional functions may not be required for certain algos or the null
 // instance provides a safe default. If the default is suitable for
@@ -86,7 +86,7 @@ typedef  uint32_t set_t;
 
 #define EMPTY_SET       0
 #define SSE2_OPT        1
-#define AES_OPT         2  
+#define AES_OPT         2
 #define AVX_OPT         4
 #define AVX2_OPT        8
 #define SHA_OPT      0x10
@@ -257,7 +257,7 @@ bool std_ready_to_mine( struct work* work, struct stratum_ctx* stratum,
 
 // Called from main to initialize all gate functions and algo-specific data
 // by calling the algo's register function.
-bool register_algo_gate( int algo, algo_gate_t *gate );
+bool register_algo_gate( algo_gate_t *gate );
 
 // Override any default gate functions that are applicable and do any other
 // algo-specific initialization.
@@ -271,7 +271,7 @@ bool register_algo( algo_gate_t *gate );
 bool register_json_rpc2( algo_gate_t *gate );
 
 // use this to call the hash function of an algo directly, ie util.c test.
-void exec_hash_function( int algo, void *output, const void *pdata );
+void exec_hash_function( void *output, const void *pdata );
 
 void get_algo_alias( char** algo_or_alias );
 

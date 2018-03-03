@@ -63,22 +63,6 @@ cpuminer \-BSq \-o http://my.server:9327
 .fi
 .SH OPTIONS
 .TP
-\fB\-a\fR, \fB\-\-algo\fR=\fIALGORITHM\fR
-Set the hashing algorithm to use.
-Default is scrypt.
-Possible values are:
-.RS 11
-.TP 10
-.B scrypt
-scrypt(1024, 1, 1) (used by Litecoin)
-.TP
-.B scrypt:\fIN\fR
-scrypt(\fIN\fR, 1, 1) (\fIN\fR must be a power of 2 greater than 1)
-.TP
-.B sha256d
-SHA-256d (used by Bitcoin)
-.RE
-.TP
 \fB\-\-benchmark\fR
 Run in offline benchmark mode.
 .TP

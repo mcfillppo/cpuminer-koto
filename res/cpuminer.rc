@@ -78,7 +78,7 @@ BEGIN
         BEGIN
             VALUE "FileVersion", "1.2"
             VALUE "LegalCopyright", "Copyright (C) 2015"
-            VALUE "ProductName", "cpuminer-opt"
+            VALUE "ProductName", "cpuminer-koto"
             VALUE "ProductVersion", "1.2"
         END
     END

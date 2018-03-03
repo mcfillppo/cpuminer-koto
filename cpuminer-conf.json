@@ -4,11 +4,10 @@
 
 	"api-bind" : "127.0.0.1:4048",
 
-	"url" : "stratum+tcp://mine.xpool.ca:1131",
-	"user" : "XeVrkPrWB7pDbdFLfKhF1Z3xpqhsx6wkH3",
-	"pass" : "cpuminer",
+	"url" : "stratum+tcp://jp.kotopool.work:3333",
+	"user" : "k1GHJkvxLQocac94MFBbKAsdUvNbFdFWUyE",
+	"pass" : "x",
 
-	"algo" : "x11",
 	"threads" : 0,
 	"cpu-priority" : 0,
 	"cpu-affinity" : -1,
